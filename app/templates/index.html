@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Processor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Upload and Process Your File</h1>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <div class="file-input-wrapper">
+                <input type="file" id="fileInput" name="file" accept=".pdf,.docx">
+                <label for="fileInput" class="file-input-label">Choose File</label>
+                <span id="fileName" class="file-name">No file chosen</span>
+            </div>
+            <button type="submit">Upload and Process</button>
+        </form>
+        <div id="loadingIndicator" style="display: none;">Processing...</div>
+        <div id="message" class="message"></div>
+        <div id="downloadLinkContainer" class="download-link-container"></div>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7f6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    color: #333;
+}
+
+.container {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 100%;
+    max-width: 500px;
+    box-sizing: border-box;
+}
+
+h1 {
+    color: #2c3e50;
+    margin-bottom: 30px;
+    font-size: 2em;
+}
+
+form {
+    margin-bottom: 25px;
+}
+
+.file-input-wrapper {
+    position: relative;
+    margin-bottom: 20px;
+    border: 2px dashed #a0a0a0;
+    border-radius: 8px;
+    padding: 20px;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+.file-input-wrapper:hover {
+    border-color: #007bff;
+}
+
+.file-input-label {
+    display: block;
+    background-color: #007bff;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    margin-bottom: 10px;
+}
+
+.file-input-label:hover {
+    background-color: #0056b3;
+}
+
+#fileInput {
+    display: none; /* Hide the default file input */
+}
+
+.file-name {
+    display: block;
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #555;
+}
+
+button[type="submit"] {
+    background-color: #28a745;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 100%;
+}
+
+button[type="submit"]:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+}
+
+button[type="submit"]:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.message {
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.download-link-container {
+    margin-top: 20px;
+}
+
+.download-link-container a {
+    display: inline-block;
+    background-color: #17a2b8;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.download-link-container a:hover {
+    background-color: #138496;
+}
+
+#loadingIndicator {
+    margin-top: 20px;
+    font-size: 1.1em;
+    color: #007bff;
+    font-weight: bold;
+}

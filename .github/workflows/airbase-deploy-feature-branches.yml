@@ -1,0 +1,32 @@
+name: Airbase Feature Branch CI/CD
+
+on:
+  push:
+    branches:
+      - '*'
+      - '!main'
+
+jobs:
+  build-and-deploy-feature-branch:
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Airbase CLI
+        run: npm install --global @airbase/airbase-cli@containers
+
+      - name: Build Docker image
+        run: airbase container build
+
+      - name: Deploy to Feature Branch Environment
+        run: airbase container deploy --yes ${{ github.ref_name }}
+        env:
+          AIRBASE_ACCESS_KEY_ID: ${{ secrets.AIRBASE_ACCESS_KEY_ID }}
+          AIRBASE_SECRET_ACCESS_KEY: ${{ secrets.AIRBASE_SECRET_ACCESS_KEY }}
