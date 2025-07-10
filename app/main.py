@@ -2,6 +2,7 @@ import os
 from flask import Flask, request, render_template, send_from_directory, jsonify
 from werkzeug.utils import secure_filename
 from app.utils import process_file
+from app.services.maestro_api import get_maestro_data, MaestroAPIError # Added import
 import time
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
@@ -49,6 +50,18 @@ def upload_file():
         else:
             return jsonify({'error': 'File processing failed'}), 500
     return jsonify({'error': 'File type not allowed'}), 400
+
+@app.route('/maestro-data')
+def maestro_data_route():
+    try:
+        data = get_maestro_data()
+        return jsonify(data)
+    except MaestroAPIError as e:
+        return jsonify({'error': str(e)}), 500
+    except Exception as e:
+        # Catch any other unexpected errors
+        app.logger.error(f"Unexpected error in /maestro-data route: {e}")
+        return jsonify({'error': 'An unexpected server error occurred'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

@@ -83,4 +83,34 @@ document.addEventListener('DOMContentLoaded', () => {
         messageDiv.textContent = text;
         messageDiv.className = `message ${type}`;
     }
+
+    // --- Maestro Data Fetching ---
+    const fetchMaestroDataButton = document.getElementById('fetchMaestroDataButton');
+    const maestroLoadingIndicator = document.getElementById('maestroLoadingIndicator');
+    const maestroDataResponseArea = document.getElementById('maestroDataResponse');
+
+    if (fetchMaestroDataButton) {
+        fetchMaestroDataButton.addEventListener('click', async () => {
+            maestroLoadingIndicator.style.display = 'block';
+            maestroDataResponseArea.textContent = ''; // Clear previous response
+            fetchMaestroDataButton.disabled = true;
+
+            try {
+                const response = await fetch('/maestro-data');
+                const data = await response.json();
+
+                if (response.ok) {
+                    maestroDataResponseArea.textContent = JSON.stringify(data, null, 2);
+                } else {
+                    maestroDataResponseArea.textContent = `Error: ${data.error || 'Unknown error'}`;
+                }
+            } catch (error) {
+                console.error('Error fetching Maestro data:', error);
+                maestroDataResponseArea.textContent = 'Network error or server is unreachable while fetching Maestro data.';
+            } finally {
+                maestroLoadingIndicator.style.display = 'none';
+                fetchMaestroDataButton.disabled = false;
+            }
+        });
+    }
 });

@@ -20,6 +20,14 @@ jobs:
       - name: Install Airbase CLI
         run: npm install --global @airbase/airbase-cli@containers
 
+      - name: Create .env file for staging branch
+        shell: bash
+        run: |
+          echo "MAESTRO_ENDPOINT=${{ secrets.MAESTRO_ENDPOINT }}" > .env.staging
+          echo "MAESTRO_API_KEY=${{ secrets.MAESTRO_API_KEY }}" >> .env.staging
+          echo "Successfully created .env.staging"
+
+
       - name: Build Docker image
         run: airbase container build
 
@@ -44,6 +52,13 @@ jobs:
 
       - name: Install Airbase CLI
         run: npm install --global @airbase/airbase-cli@containers
+
+      - name: Create .env file for main branch
+        shell: bash
+        run: |
+          echo "MAESTRO_ENDPOINT=${{ secrets.MAESTRO_ENDPOINT }}" > .env
+          echo "MAESTRO_API_KEY=${{ secrets.MAESTRO_API_KEY }}" >> .env
+          echo "Successfully created .env"
 
       - name: Build Docker image
         run: airbase container build
