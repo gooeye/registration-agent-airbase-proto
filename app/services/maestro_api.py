@@ -27,11 +27,16 @@ def get_maestro_data():
         raise MaestroAPIError("MAESTRO_API_KEY environment variable not set.")
 
     headers = {
-        "x-api-key": api_key
+        "x-api-key": api_key,
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "SOME_KEY": "SOME_VALUE"
     }
 
     try:
-        response = requests.get(endpoint, headers=headers, timeout=10) # 10 second timeout
+        response = requests.post(endpoint, headers=headers, timeout=60) # 10 second timeout
         response.raise_for_status()  # Raises an HTTPError for bad responses (4XX or 5XX)
         return response.json()
     except requests.exceptions.MissingSchema:
