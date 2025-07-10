@@ -21,19 +21,27 @@ jobs:
 
       - name: Install Airbase CLI
         run: npm install --global @airbase/airbase-cli@containers
+      
+      - name: Generate hashed branch name
+        id: branch_name_hash
+        run: |
+          echo "running on ${{ github.ref_name }}"
+          TRUNCATED_HASH=$(echo -n "${{ github.ref_name }}" | sha256sum | cut -c1-6)
+          echo "hashed_ref_name=${TRUNCATED_HASH}" >> $GITHUB_OUTPUT
+        shell: bash
 
       - name: Create .env file for feature branch
         shell: bash
         run: |
-          echo "MAESTRO_ENDPOINT=${{ secrets.MAESTRO_ENDPOINT }}" > .env.${{ github.ref_name }}
-          echo "MAESTRO_API_KEY=${{ secrets.MAESTRO_API_KEY }}" >> .env.${{ github.ref_name }}
-          echo "Successfully created .env.${{ github.ref_name }}"
+          echo "MAESTRO_ENDPOINT=${{ secrets.MAESTRO_ENDPOINT }}" > .env.${{ steps.branch_name_hash.outputs.hashed_ref_name }}
+          echo "MAESTRO_API_KEY=${{ secrets.MAESTRO_API_KEY }}" >> .env.${{ steps.branch_name_hash.outputs.hashed_ref_name }}
+          echo "Successfully created .env.${{ steps.branch_name_hash.outputs.hashed_ref_name }}"
 
       - name: Build Docker image
         run: airbase container build
 
       - name: Deploy to Feature Branch Environment
-        run: airbase container deploy --yes ${{ github.ref_name }}
+        run: airbase container deploy --yes ${{ steps.branch_name_hash.outputs.hashed_ref_name }}
         env:
           AIRBASE_ACCESS_KEY_ID: ${{ secrets.AIRBASE_ACCESS_KEY_ID }}
           AIRBASE_SECRET_ACCESS_KEY: ${{ secrets.AIRBASE_SECRET_ACCESS_KEY }}
