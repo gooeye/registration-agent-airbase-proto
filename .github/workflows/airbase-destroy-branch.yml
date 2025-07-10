@@ -1,0 +1,47 @@
+# .github/workflows/cleanup-on-branch-delete.yml
+name: Airbase Cleanup on Branch Delete
+
+on:
+  delete
+
+jobs:
+  cleanup-feature-branch-deployment:
+    if: github.event.ref_type == 'branch'
+    runs-on: ubuntu-latest
+    environment: production # Or a general environment if you have one, or omit if not needed for cleanup
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        # Note: Checking out code isn't strictly necessary for cleanup,
+        # but it's a common first step and harmless.
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Airbase CLI
+        run: npm install --global @airbase/airbase-cli@containers
+      
+      - name: Extract branch name and Generate hashed branch name
+        id: branch_name_hash
+        run: |
+          # github.event.ref for 'delete' event provides the full ref, e.g., 'refs/heads/my-feature-branch'
+          # We need to extract just 'my-feature-branch'
+          RAW_REF="${{ github.event.ref }}"
+          echo "running on $RAW_REF"
+          BRANCH_NAME=$(echo "$RAW_REF" | sed 's/refs\/heads\///')
+          
+          # Replicate the exact hashing logic from your deploy workflow
+          TRUNCATED_HASH=$(echo -n "$BRANCH_NAME" | sha256sum | cut -c1-6)
+          
+          echo "hashed_ref_name=${TRUNCATED_HASH}" >> $GITHUB_OUTPUT
+          echo "Attempting to clean up deployment for branch: $BRANCH_NAME (Hashed: $TRUNCATED_HASH)"
+        shell: bash
+
+      - name: Destroy Airbase Container for Deleted Branch
+        run: airbase container destroy --yes ${{ steps.branch_name_hash.outputs.hashed_ref_name }}
+        env:
+          # Ensure these secrets are available in your repository settings
+          AIRBASE_ACCESS_KEY_ID: ${{ secrets.AIRBASE_ACCESS_KEY_ID }}
+          AIRBASE_SECRET_ACCESS_KEY: ${{ secrets.AIRBASE_SECRET_ACCESS_KEY }}
