@@ -20,6 +20,14 @@
         <div id="loadingIndicator" style="display: none;">Processing...</div>
         <div id="message" class="message"></div>
         <div id="downloadLinkContainer" class="download-link-container"></div>
+
+        <hr class="separator">
+
+        <h2>Fetch Maestro Data</h2>
+        <button id="fetchMaestroDataButton">Fetch Data</button>
+        <div id="maestroLoadingIndicator" style="display: none;">Loading Maestro Data...</div>
+        <h3>Maestro API Response:</h3>
+        <pre id="maestroDataResponse" class="response-area"></pre>
     </div>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>

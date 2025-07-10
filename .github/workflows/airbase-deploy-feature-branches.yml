@@ -22,6 +22,13 @@ jobs:
       - name: Install Airbase CLI
         run: npm install --global @airbase/airbase-cli@containers
 
+      - name: Create .env file for feature branch
+        shell: bash
+        run: |
+          echo "MAESTRO_ENDPOINT=${{ secrets.MAESTRO_ENDPOINT }}" > .env.${{ github.ref_name }}
+          echo "MAESTRO_API_KEY=${{ secrets.MAESTRO_API_KEY }}" >> .env.${{ github.ref_name }}
+          echo "Successfully created .env.${{ github.ref_name }}"
+
       - name: Build Docker image
         run: airbase container build
 
