@@ -36,7 +36,7 @@ def get_maestro_data():
     }
 
     try:
-        response = requests.post(endpoint, headers=headers, timeout=60) # 10 second timeout
+        response = requests.post(endpoint, headers=headers, json=payload, timeout=60)
         response.raise_for_status()  # Raises an HTTPError for bad responses (4XX or 5XX)
         return response.json()
     except requests.exceptions.MissingSchema:
