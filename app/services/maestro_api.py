@@ -1,7 +1,7 @@
 import os
 import requests
 from smolagents import Model
-from pydantic import dataclass
+from pydantic.dataclasses import dataclass
 
 @dataclass
 class ChatMessage:

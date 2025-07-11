@@ -2,7 +2,7 @@ import os
 from flask import Flask, request, render_template, send_from_directory, jsonify
 from werkzeug.utils import secure_filename
 from app.utils import process_file
-from app.services.maestro_api import get_maestro_data, MaestroAPIError # Added import
+from app.services.maestro_api import get_maestro_data
 import time
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
@@ -56,10 +56,7 @@ def maestro_data_route():
     try:
         data = get_maestro_data()
         return data.content
-    except MaestroAPIError as e:
-        return jsonify({'error': str(e)}), 500
     except Exception as e:
-        # Catch any other unexpected errors
         app.logger.error(f"Unexpected error in /maestro-data route: {e}")
         return jsonify({'error': 'An unexpected server error occurred'}), 500
 
