@@ -1,7 +1,7 @@
 import os
 import requests
 from smolagents import Model
-from pydantic.dataclasses import dataclass
+from dataclasses import dataclass
 
 @dataclass
 class ChatMessage:
@@ -57,7 +57,7 @@ class MaestroModel(Model):
         return chat_message
 
 def get_maestro_data(route: str = "/bedrock-completion", environment: str = "dev") -> ChatMessage:
-    endpoint = f"{os.getenv("MAESTRO_ENDPOINT")}/{environment}{route}"
+    endpoint = f"{os.getenv('MAESTRO_ENDPOINT')}/{environment}{route}"
     api_key = os.getenv("MAESTRO_API_KEY")
     if not endpoint or not api_key:
         raise ValueError("MAESTRO_ENDPOINT and MAESTRO_API_KEY must be set")
