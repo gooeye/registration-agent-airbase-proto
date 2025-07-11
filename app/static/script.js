@@ -109,7 +109,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     },
                     body: JSON.stringify({ message: message }),
                 });
-                const data = await response.json();
                 maestroDataResponseArea.textContent = response;
             } catch (error) {
                 console.error('Error fetching Maestro data:', error);
