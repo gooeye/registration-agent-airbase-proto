@@ -1,53 +1,65 @@
 import os
 import requests
+from smolagents import Model
+from pydantic import dataclass
 
-class MaestroAPIError(Exception):
-    """Custom exception for Maestro API errors."""
-    pass
+@dataclass
+class ChatMessage:
+    role: str
+    content: str | list[dict[str, any]] | None = None
 
-def get_maestro_data():
-    """
-    Fetches data from the Maestro API.
+class MaestroModel(Model):
+    def __init__(
+        self,
+        api_key: str,
+        endpoint: str,
+        model: str = "anthropic.claude-3-haiku-20240307-v1:0", 
+        max_tokens: int = 2024, 
+        anthropic_version: str = "bedrock-2023-05-31"
+    ):
+        super().__init__()
+        self.api_key = api_key
+        self.endpoint = endpoint
+        self.model = model
+        self.max_tokens = max_tokens
+        self.anthropic_version = anthropic_version
 
-    Reads the API endpoint and key from environment variables MAESTRO_ENDPOINT
-    and MAESTRO_API_KEY.
+    def generate(self, messages, stop_sequences=["Task"]) -> str:
+        if isinstance(messages, str):
+            messages = [{"role": "user", "content": messages}]
+        
+        response = requests.post(
+            self.endpoint,
+            headers={
+                "x-api-key": self.api_key,
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": self.model,
+                "max_tokens": self.max_tokens,
+                "anthropic_version": self.anthropic_version,
+                "messages": messages,
+                "stop_sequences": stop_sequences
+            }
+        )
+        response_data = response.json()
+        if "error" in response_data:
+            error_message = response_data["error"].get("message", "Unknown error")
+            return f"Error: {error_message}"
+        if "content" in response_data:
+            text = []
+            for message in response_data["content"]:
+                if message.get("type") == "text":
+                    text.append(message.get("text", ""))
+            chat_message = ChatMessage(role="assistant", content=" ".join(text))
+            return chat_message
+        chat_message = ChatMessage(role="assistant", content=str(response_data))
+        return chat_message
 
-    Returns:
-        dict: The JSON response from the API.
-
-    Raises:
-        MaestroAPIError: If environment variables are not set or if the API request fails.
-    """
-    endpoint = os.getenv("MAESTRO_ENDPOINT")
+def get_maestro_data(route: str = "/bedrock-completion", environment: str = "dev") -> ChatMessage:
+    endpoint = f"{os.getenv("MAESTRO_ENDPOINT")}/{environment}{route}"
     api_key = os.getenv("MAESTRO_API_KEY")
-
-    if not endpoint:
-        raise MaestroAPIError("MAESTRO_ENDPOINT environment variable not set.")
-    if not api_key:
-        raise MaestroAPIError("MAESTRO_API_KEY environment variable not set.")
-
-    headers = {
-        "x-api-key": api_key,
-        "Content-Type": "application/json"
-    }
-
-    payload = {
-        "SOME_KEY": "SOME_VALUE"
-    }
-
-    try:
-        response = requests.post(endpoint, headers=headers, json=payload, timeout=60)
-        response.raise_for_status()  # Raises an HTTPError for bad responses (4XX or 5XX)
-        return response.json()
-    except requests.exceptions.MissingSchema:
-        raise MaestroAPIError(f"Invalid URL: '{endpoint}'. Make sure it includes the schema (e.g., http:// or https://).")
-    except requests.exceptions.ConnectionError as e:
-        raise MaestroAPIError(f"Connection error to Maestro API at {endpoint}: {e}")
-    except requests.exceptions.Timeout as e:
-        raise MaestroAPIError(f"Request to Maestro API timed out: {e}")
-    except requests.exceptions.HTTPError as e:
-        raise MaestroAPIError(f"Maestro API request failed with status {e.response.status_code}: {e.response.text}")
-    except requests.exceptions.RequestException as e:
-        raise MaestroAPIError(f"An unexpected error occurred while calling Maestro API: {e}")
-    except ValueError as e: # Handle cases where response.json() fails
-        raise MaestroAPIError(f"Failed to decode JSON response from Maestro API: {e}")
+    if not endpoint or not api_key:
+        raise ValueError("MAESTRO_ENDPOINT and MAESTRO_API_KEY must be set")
+    maestro_model = MaestroModel(api_key, endpoint)
+    return maestro_model.generate("What is the capital of France?")

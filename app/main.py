@@ -55,7 +55,7 @@ def upload_file():
 def maestro_data_route():
     try:
         data = get_maestro_data()
-        return jsonify(data)
+        return data.content
     except MaestroAPIError as e:
         return jsonify({'error': str(e)}), 500
     except Exception as e:
