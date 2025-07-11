@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     },
                     body: JSON.stringify({ message: message }),
                 });
-                maestroDataResponseArea.textContent = response;
+                maestroDataResponseArea.textContent = response.text();
             } catch (error) {
                 console.error('Error fetching Maestro data:', error);
                 maestroDataResponseArea.textContent = 'Network error or server is unreachable while fetching Maestro data.';
