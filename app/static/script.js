@@ -97,6 +97,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 const maestroInput = document.getElementById('maestroInput');
+                if (!maestroInput || maestroInput.value === '') {
+                    maestroDataResponseArea.textContent = 'No input found';
+                    throw new Error('No input found');
+                }
                 const message = maestroInput ? maestroInput.value : ''; // Get value from input, default to empty string
                 const response = await fetch('/maestro-data', {
                     method: 'POST',
