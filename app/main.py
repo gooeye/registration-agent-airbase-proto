@@ -51,10 +51,16 @@ def upload_file():
             return jsonify({'error': 'File processing failed'}), 500
     return jsonify({'error': 'File type not allowed'}), 400
 
-@app.route('/maestro-data')
+@app.route('/maestro-data', methods=['POST'])
 def maestro_data_route():
     try:
-        data = get_maestro_data()
+        if not request.is_json:
+            return jsonify({"error": "Request must be JSON"}), 400
+        payload = request.get_json()
+        message = payload.get('message')
+        if not message:
+            return jsonify({"error": "Missing 'message' field in JSON payload"}), 400
+        data = get_maestro_data(message)
         return data.content
     except Exception as e:
         app.logger.error(f"Unexpected error in /maestro-data route: {e}")

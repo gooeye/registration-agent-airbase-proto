@@ -56,10 +56,10 @@ class MaestroModel(Model):
         chat_message = ChatMessage(role="assistant", content=str(response_data))
         return chat_message
 
-def get_maestro_data(route: str = "/bedrock-completion", environment: str = "dev") -> ChatMessage:
+def get_maestro_data(message: str, route: str = "/bedrock-completion", environment: str = "dev") -> ChatMessage:
     endpoint = f"{os.getenv('MAESTRO_ENDPOINT')}/{environment}{route}"
     api_key = os.getenv("MAESTRO_API_KEY")
     if not endpoint or not api_key:
         raise ValueError("MAESTRO_ENDPOINT and MAESTRO_API_KEY must be set")
     maestro_model = MaestroModel(api_key, endpoint)
-    return maestro_model.generate("What is the capital of France?")
+    return maestro_model.generate(message)

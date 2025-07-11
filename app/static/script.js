@@ -96,14 +96,17 @@ document.addEventListener('DOMContentLoaded', () => {
             fetchMaestroDataButton.disabled = true;
 
             try {
-                const response = await fetch('/maestro-data');
+                const maestroInput = document.getElementById('maestroInput');
+                const message = maestroInput ? maestroInput.value : ''; // Get value from input, default to empty string
+                const response = await fetch('/maestro-data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message }),
+                });
                 const data = await response.json();
-
-                if (response.ok) {
-                    maestroDataResponseArea.textContent = JSON.stringify(data, null, 2);
-                } else {
-                    maestroDataResponseArea.textContent = `Error: ${data.error || 'Unknown error'}`;
-                }
+                maestroDataResponseArea.textContent = response;
             } catch (error) {
                 console.error('Error fetching Maestro data:', error);
                 maestroDataResponseArea.textContent = 'Network error or server is unreachable while fetching Maestro data.';
